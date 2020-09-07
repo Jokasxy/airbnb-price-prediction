@@ -25,6 +25,12 @@ enum FormData {
     column_17 = 'column_17',
 }
 
+interface Result {
+    price: number;
+    scoredLabelMean: number;
+    scoredLabelStandardDeviation: number;
+}
+
 const requestData = (values: Record<FormData, any>) => {
     return ({
         "Inputs": {
@@ -78,6 +84,7 @@ const requestData = (values: Record<FormData, any>) => {
 
 const App = () => {
     const classes = useClasses();
+    const [result, setResult] = React.useState<Result | undefined>();
     const { handleSubmit, control } = useForm<Record<FormData, any>>();
 
 	const onSubmit = React.useCallback((values: Record<FormData, any>) => {
@@ -91,11 +98,26 @@ const App = () => {
         })
         .then(response => {
             console.log(response);
+            setResult({
+                price: response.data.Results.output1.Values[5],
+                scoredLabelMean: response.data.Results.output1.Values[11],
+                scoredLabelStandardDeviation: response.data.Results.output1.Values[12]
+            })
         })
         .catch(error => {
             console.log(error);
+            alert(error?.message);
         })
-	}, []);
+    }, []);
+    
+
+    let upperBound = 0;
+    let lowerBound = 0;
+
+    if(result) {
+        upperBound = result?.scoredLabelMean + result?.scoredLabelStandardDeviation;
+        lowerBound = result?.scoredLabelMean - result?.scoredLabelStandardDeviation;
+    }
 
     return (
         <div className={classes.app}>
@@ -333,6 +355,21 @@ const App = () => {
 					</Button>
                 </form>
             </main>
+            { result &&
+                <section className={classes.section}>
+                    <p>Predicted price is: {result?.scoredLabelMean}</p>
+                    <p>Predicted price deviation is: {result?.scoredLabelStandardDeviation}</p>
+                    { result?.price > upperBound &&
+                        <p className={classes.expensive}>Too expensive!</p>
+                    }
+                    { result?.price < lowerBound &&
+                        <p className={classes.cheap}>Cheap accomodation!</p>
+                    }
+                    { result?.price > lowerBound && result?.price < upperBound  &&
+                        <p>Reasonable price!</p>
+                    }
+                </section>
+            }
         </div>
     );
 }
@@ -372,5 +409,14 @@ const useClasses = makeStyles({
         marginTop: '20px',
         marginBottom: '20px',
         fontWeight: 'bold',
+    },
+    section: {
+        maxWidth: '600px',
+    },
+    cheap: {
+        color: 'green',
+    },
+    expensive: {
+        color: 'red',
     },
 })
