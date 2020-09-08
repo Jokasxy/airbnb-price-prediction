@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles, FormControl, Input, InputLabel, Button } from '@material-ui/core';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { Controller, useForm } from 'react-hook-form';
 import './App.css';
 import axios from 'axios';
@@ -130,6 +131,24 @@ const App = () => {
 				<h1>Airbnb Price Prediction</h1>
 			</header>
 			<main className={classes.main}>
+			{ result ? (
+				<section className={classes.section}>
+					<p>Predicted price is: {result?.scoredLabelMean}</p>
+					<p>Predicted price deviation is: {result?.scoredLabelStandardDeviation}</p>
+					{result?.price > upperBound && <p className={classes.expensive}>Too expensive!</p>}
+					{result?.price < lowerBound && <p className={classes.cheap}>Cheap accomodation!</p>}
+					{result?.price > lowerBound && result?.price < upperBound && <p>Reasonable price!</p>}
+					<Button
+						variant="contained"
+						color="secondary"
+						className={classes.button}
+						startIcon={<RefreshIcon />}
+						onClick={() => setResult(undefined)}
+					>
+						AGAIN
+					</Button>
+				</section>
+			) : (
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<FormControl required className={classes.formControl}>
 						<InputLabel htmlFor={FormData.id} className={classes.inputLabel}>
@@ -267,16 +286,8 @@ const App = () => {
 						Submit
 					</Button>
 				</form>
-			</main>
-			{result && (
-				<section className={classes.section}>
-					<p>Predicted price is: {result?.scoredLabelMean}</p>
-					<p>Predicted price deviation is: {result?.scoredLabelStandardDeviation}</p>
-					{result?.price > upperBound && <p className={classes.expensive}>Too expensive!</p>}
-					{result?.price < lowerBound && <p className={classes.cheap}>Cheap accomodation!</p>}
-					{result?.price > lowerBound && result?.price < upperBound && <p>Reasonable price!</p>}
-				</section>
 			)}
+			</main>
 		</div>
 	);
 };
@@ -318,7 +329,7 @@ const useClasses = makeStyles({
 		fontWeight: 'bold',
 	},
 	section: {
-		maxWidth: '600px',
+		color: 'rgba(0, 0, 0, 0.87)',
 	},
 	cheap: {
 		color: 'green',
