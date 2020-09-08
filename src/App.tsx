@@ -91,14 +91,14 @@ const App = () => {
 
 	const upperBound = React.useMemo(() => {
 		if (result) {
-			return result?.scoredLabelMean + result?.scoredLabelStandardDeviation;
+			return (Number(result.scoredLabelMean) + Number(result.scoredLabelStandardDeviation)).toFixed(2);
 		}
 		return 0;
 	}, [result]);
 
 	const lowerBound = React.useMemo(() => {
 		if (result) {
-			return result?.scoredLabelMean - result?.scoredLabelStandardDeviation;
+			return (Number(result.scoredLabelMean) - Number(result.scoredLabelStandardDeviation)).toFixed(2);
 		}
 		return 0;
 	}, [result]);
@@ -133,14 +133,15 @@ const App = () => {
 			<main className={classes.main}>
 			{ result ? (
 				<section className={classes.section}>
-					<p>Predicted price is: {result?.scoredLabelMean}</p>
-					<p>Predicted price deviation is: {result?.scoredLabelStandardDeviation}</p>
+					<p>Accomodation price is: {result.price}</p>
+					<p>Predicted price is: {result.scoredLabelMean}</p>
+					<p>Predicted price deviation is: {result.scoredLabelStandardDeviation}</p>
 					{result?.price > upperBound && <p className={classes.expensive}>Too expensive!</p>}
 					{result?.price < lowerBound && <p className={classes.cheap}>Cheap accomodation!</p>}
 					{result?.price > lowerBound && result?.price < upperBound && <p>Reasonable price!</p>}
 					<Button
 						variant="contained"
-						color="secondary"
+						color="primary"
 						className={classes.button}
 						startIcon={<RefreshIcon />}
 						onClick={() => setResult(undefined)}
@@ -282,7 +283,7 @@ const App = () => {
 						<Controller as={<Input />} control={control} defaultValue="" name={FormData.availability_365} />
 					</FormControl>
 
-					<Button type="submit" variant="contained" className={classes.button}>
+					<Button type="submit" variant="contained" color="primary" className={classes.button}>
 						Submit
 					</Button>
 				</form>
