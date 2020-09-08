@@ -75,7 +75,7 @@ const App = () => {
 			.catch((error) => {
 				alert(error?.message);
 			});
-    }, []);
+	}, []);
 
 	return (
 		<div className={classes.app}>
@@ -85,12 +85,12 @@ const App = () => {
 			<main className={classes.main}>
 			{ result ? (
 				<section className={classes.section}>
-					<p>Accomodation price is: {result.price}</p>
-					<p>Predicted price is: {result.scoredLabelMean}</p>
-					<p>Predicted price deviation is: {result.scoredLabelStandardDeviation}</p>
-					{result?.price > upperBound && <p className={classes.expensive}>Too expensive!</p>}
-					{result?.price < lowerBound && <p className={classes.cheap}>Cheap accomodation!</p>}
-					{result?.price > lowerBound && result?.price < upperBound && <p>Reasonable price!</p>}
+					<p>Accomodation price is: {Number(result.price).toFixed(2)}</p>
+					<p>Predicted price is: {Number(result.scoredLabelMean).toFixed(2)}</p>
+					<p>Predicted price deviation is: {Number(result.scoredLabelStandardDeviation).toFixed(2)}</p>
+					{Number(result.price) > upperBound && <p className={classes.expensive}>Too expensive!</p>}
+					{Number(result.price) < lowerBound && <p className={classes.cheap}>Cheap accomodation!</p>}
+					{Number(result.price) > lowerBound && result.price < upperBound && <p>Reasonable price!</p>}
 					<Button
 						variant="contained"
 						color="primary"
