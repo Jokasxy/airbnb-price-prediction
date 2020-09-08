@@ -1,11 +1,15 @@
 import React from 'react';
-import { makeStyles, FormControl, Input, InputLabel, Button } from '@material-ui/core';
+import { makeStyles, FormControl, Input, InputLabel, Button, Select, MenuItem } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Controller, useForm } from 'react-hook-form';
 import './App.css';
 import axios from 'axios';
+import requestData from './data/requestData';
+import roomTypes from './data/roomTypes';
+import neighbourhoods from './data/neighbourhoods';
+import neighbourhoodGroups from './data/neighbourhoodGroups';
 
-enum FormData {
+export enum FormData {
 	id = 'id',
 	name = 'name',
 	host_id = 'host_id',
@@ -31,58 +35,6 @@ interface Result {
 	scoredLabelMean: number;
 	scoredLabelStandardDeviation: number;
 }
-
-const requestData = (values: Record<FormData, any>) => {
-	return {
-		Inputs: {
-			input1: {
-				ColumnNames: [
-					'id',
-					'name',
-					'host_id',
-					'host_name',
-					'neighbourhood_group',
-					'neighbourhood',
-					'latitude',
-					'longitude',
-					'room_type',
-					'price',
-					'minimum_nights',
-					'number_of_reviews',
-					'last_review',
-					'reviews_per_month',
-					'calculated_host_listings_count',
-					'availability_365',
-					'Column 16',
-					'Column 17',
-				],
-				Values: [
-					[
-						values.id,
-						values.name,
-						values.host_id,
-						values.host_name,
-						values.neighbourhood_group,
-						values.neighbourhood,
-						values.latitude,
-						values.longitude,
-						values.room_type,
-						values.price,
-						values.minimum_nights,
-						values.number_of_reviews,
-						values.last_review,
-						values.reviews_per_month,
-						values.calculated_host_listings_count,
-						values.availability_365,
-						'0',
-						'0',
-					],
-				],
-			},
-		},
-		GlobalParameters: {},
-	};
-};
 
 const App = () => {
 	const classes = useClasses();
@@ -184,7 +136,15 @@ const App = () => {
 							{FormData.neighbourhood_group.toUpperCase()}
 						</InputLabel>
 						<Controller
-							as={<Input />}
+							as={
+								<Select className={classes.select}>
+									{neighbourhoodGroups.map((item, key) =>
+										<MenuItem key={key} value={item}>
+											{item}
+										</MenuItem>
+									)}
+								</Select>
+							}
 							control={control}
 							defaultValue=""
 							name={FormData.neighbourhood_group}
@@ -195,7 +155,18 @@ const App = () => {
 						<InputLabel htmlFor={FormData.neighbourhood} className={classes.inputLabel}>
 							{FormData.neighbourhood.toUpperCase()}
 						</InputLabel>
-						<Controller as={<Input />} control={control} defaultValue="" name={FormData.neighbourhood} />
+						<Controller as={
+								<Select className={classes.select}>
+									{neighbourhoods.map((item, key) =>
+										<MenuItem key={key} value={item}>
+											{item}
+										</MenuItem>
+									)}
+								</Select>
+							}
+							control={control}
+							defaultValue=""
+							name={FormData.neighbourhood} />
 					</FormControl>
 
 					<FormControl required className={classes.formControl}>
@@ -216,7 +187,19 @@ const App = () => {
 						<InputLabel htmlFor={FormData.room_type} className={classes.inputLabel}>
 							{FormData.room_type.toUpperCase()}
 						</InputLabel>
-						<Controller as={<Input />} control={control} defaultValue="" name={FormData.room_type} />
+						<Controller as={
+							<Select className={classes.select}>
+								{roomTypes.map((item, key) =>
+									<MenuItem key={key} value={item}>
+										{item}
+									</MenuItem>
+								)}
+							</Select>
+							}
+							control={control}
+							defaultValue=""
+							name={FormData.room_type}
+						/>
 					</FormControl>
 
 					<FormControl required className={classes.formControl}>
@@ -337,5 +320,8 @@ const useClasses = makeStyles({
 	},
 	expensive: {
 		color: 'red',
+	},
+	select: {
+		textAlign: 'left',
 	},
 });
