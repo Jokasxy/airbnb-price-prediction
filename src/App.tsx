@@ -88,10 +88,24 @@ const App = () => {
 	const [result, setResult] = React.useState<Result | undefined>();
 	const { handleSubmit, control } = useForm<Record<FormData, any>>();
 
+	const upperBound = React.useMemo(() => {
+		if (result) {
+			return result?.scoredLabelMean + result?.scoredLabelStandardDeviation;
+		}
+		return 0;
+	}, [result]);
+
+	const lowerBound = React.useMemo(() => {
+		if (result) {
+			return result?.scoredLabelMean - result?.scoredLabelStandardDeviation;
+		}
+		return 0;
+	}, [result]);
+
 	const onSubmit = React.useCallback((values: Record<FormData, any>) => {
 		const data: any = requestData(values);
 		axios
-			.post(process.env.REACT_APP_API_URL!, data, {
+			.post('https://cors-anywhere.herokuapp.com/' + process.env.REACT_APP_API_URL!, data, {
 				headers: {
 					Authorization: process.env.REACT_APP_API_KEY!,
 					'Content-Type': 'application/json',
@@ -99,26 +113,16 @@ const App = () => {
 				},
 			})
 			.then((response) => {
-				console.log(response);
 				setResult({
-					price: response.data.Results.output1.Values[5],
-					scoredLabelMean: response.data.Results.output1.Values[11],
-					scoredLabelStandardDeviation: response.data.Results.output1.Values[12],
+					price: response.data.Results.output1.value.Values[0][5],
+					scoredLabelMean: response.data.Results.output1.value.Values[0][11],
+					scoredLabelStandardDeviation: response.data.Results.output1.value.Values[0][12],
 				});
 			})
 			.catch((error) => {
-				console.log(error);
 				alert(error?.message);
 			});
-	}, []);
-
-	let upperBound = 0;
-	let lowerBound = 0;
-
-	if (result) {
-		upperBound = result?.scoredLabelMean + result?.scoredLabelStandardDeviation;
-		lowerBound = result?.scoredLabelMean - result?.scoredLabelStandardDeviation;
-	}
+    }, []);
 
 	return (
 		<div className={classes.app}>
